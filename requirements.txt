@@ -5,3 +5,8 @@ opencv-python
 wandb
 plotly
 matplotlib
+sklearn
+torchvision
+pickle
+Pillow
+pandas
