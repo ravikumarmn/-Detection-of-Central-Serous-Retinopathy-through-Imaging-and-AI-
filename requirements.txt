@@ -1,12 +1,11 @@
 -e .
+wandb
 streamlit 
 torch
 opencv-python
-wandb
 plotly
 matplotlib
 sklearn
 torchvision
 Pillow
 pandas
-click == 8.1.3 
