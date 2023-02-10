@@ -10,3 +10,4 @@ torchvision
 pickle
 Pillow
 pandas
+click==7.0
