@@ -10,4 +10,4 @@ torchvision
 pickle
 Pillow
 pandas
-click
+click = 8.1.3 
