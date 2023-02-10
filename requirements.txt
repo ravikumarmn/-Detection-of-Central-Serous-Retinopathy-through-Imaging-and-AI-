@@ -6,7 +6,7 @@ torch
 opencv-python
 plotly
 matplotlib
-sklearn
+scikit-learn
 torchvision
 Pillow
 pandas
