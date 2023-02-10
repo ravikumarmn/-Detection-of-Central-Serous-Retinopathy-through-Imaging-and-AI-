@@ -19,8 +19,8 @@ data_transform = transforms.Compose([
 ])
 
 
-
-model_state_dict_file = "/home/Ravikumar/freelance/computer vision/CSR_detection/checkpoints/model_cnn_learning_rate_0.001_batch_size_8.pt"
+#/home/Ravikumar/freelance/computer vision/CSR_detection/
+model_state_dict_file = "checkpoints/model_cnn_learning_rate_0.001_batch_size_8.pt"
 
 
 st.markdown('<h1 style="color:white;">Image Detection</h1>', unsafe_allow_html=True)
