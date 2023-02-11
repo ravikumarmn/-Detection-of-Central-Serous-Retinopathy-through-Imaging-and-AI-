@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 import pickle
 from src import config
 st.set_page_config(
-    page_title="Image_Detectoion",
+    page_title="Image_Detection",
     page_icon="👋",
 )
 
