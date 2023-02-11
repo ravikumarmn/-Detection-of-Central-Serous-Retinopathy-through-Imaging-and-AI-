@@ -1,9 +1,9 @@
 import argparse
-import numpy as np
-import torch
-import wandb
-import pandas as pd
-from train import train_fn
+# import numpy as np
+# import torch
+# import wandb
+# import pandas as pd
+# from train import train_fn
 # from utils import evaluate_fn,save_confusion
 
 from sklearn import svm
@@ -16,14 +16,14 @@ from utils import get_result, init_wandb,save_analysis
 
 def train_model(device,params,arg_params):
     classifier = dict(
-        cnn = SimpleCNN().to(device),
+        cnn = SimpleCNN(params['DATASET_NAME']).to(device),
         svm = svm.SVC(probability=True),
         rf = RandomForestClassifier()
     )
     model = classifier.get(arg_params.model,None)
     if model is None:
         raise ValueError
-    get_result(model, arg_params.model, arg_params.results_file)
+    get_result(model, arg_params.model, params["RESULT_FILE"])
 
 
 def main(arg_params):
@@ -41,6 +41,8 @@ def main(arg_params):
 
 
 if __name__=="__main__":
+    params =  {k:v for k,v in config.__dict__.items() if "__" not in k}
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--wandb",
@@ -60,13 +62,10 @@ if __name__=="__main__":
         choices=['cnn','rf','svm'],
         help= "choose which model to train."
     )
-    parser.add_argument(
-        "--results_file",
-        default = "results/performance_analysis.json"
-    )
+
     args = parser.parse_args()
 
 
     main(args)
-    save_analysis(args.results_file)
+    save_analysis(params["RESULT_FILE"])
 

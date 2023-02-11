@@ -2,8 +2,8 @@ import json
 import os
 
 import matplotlib.pyplot as plt
-# import numpy as np
-# import pandas as pd
+import numpy as np
+import pandas as pd
 # import plotly.express as px
 import plotly.graph_objects as go
 import torch
@@ -26,10 +26,10 @@ def save_confusion(y_true,y_pred,name):
     plt.xlabel('Predictions', fontsize=18)
     plt.ylabel('Actuals', fontsize=18)
     plt.title('Confusion Matrix', fontsize=18)
-    plt.savefig(f'results/{name}_confustion.png')
+    plt.savefig(f'results/{config.DATASET_NAME}/{name}_confustion.png')
     # plt.show()
 def load_split_data(file_name_str = "train_val_test",model_type = None):
-    datasets = torch.load(f"dataset/{file_name_str}.pt")
+    datasets = torch.load(f"dataset/{config.DATASET_NAME}_{file_name_str}.pt")
 
     # Split the data into training and validation sets
     train_data = datasets["train"]['train_images'] # The training data tensor
@@ -70,8 +70,8 @@ def init_wandb(params,arg_params):
         group="binary classification",
         notes = f"detecting central cerous retinopathy using model {params['MODEL_STR']}.",
         tags=[params['MODEL_STR']],
-        mode=arg_params.wandb
-    )
+        mode=arg_params.wandb)
+
 
 def save_analysis(json_file_str):
     result = json.load(open(json_file_str,"r"))
@@ -96,7 +96,7 @@ def save_analysis(json_file_str):
         font = dict(color = 'darkslategray', size = 11)
         ))
     ])
-    fig.write_image(f"results/performance_analysis.png")
+    fig.write_image(f"results/{config.DATASET_NAME}/performance_analysis.png")
 
 def edit_json(file,data_dict):
     json_file = json.load(open(file,"r")) # a
@@ -158,50 +158,3 @@ def train_fn(dataloader, model, optimizer,criterion,device = "cpu"):
     training_loss =  sum(train_loss)/len(train_loss)
     return training_loss,train_accuracy
 
-def run_epochs(train_loader,val_loader,model,optimizer,criterion,device):
-    params =  {k:v for k,v in config.__dict__.items() if "__" not in k}
-    print(f"Device is set to {device}\n")
-    val_loss= np.inf
-
-    epoch_train_loss = list()
-    epoch_train_acc  = list()
-    epoch_val_loss   = list()
-    epoch_val_acc    = list()
-    ep = 0
-    for epoch in range(params["EPOCHS"]):
-        training_loss,train_accuracy = train_fn(train_loader, model, optimizer, criterion,device)
-        validation_loss,val_accuracy,y_pred,y_true = evaluate_fn(val_loader, model, criterion)
-        
-        print(f"Training loss : {training_loss:.2f}\tTesting loss : {validation_loss:.2f}")
-        if validation_loss < val_loss:
-            val_loss = validation_loss
-            early_stopping = 0
-            torch.save(
-                {
-                    "model_state_dict" : model.state_dict(),
-                    "params" : params
-                },params['WORKING_DIR']+f"checkpoints/model_{params['MODEL_STR']}_learning_rate_{params['LEARNING_RATE']}_batch_size_{params['BATCH_SIZE']}.pt"
-            )
-        else:
-            early_stopping += 1
-        if early_stopping == params["PATIENCE"]:
-            print("Early stopping, training completes")
-            print(f"\nTraning_accuracy : {train_accuracy}\tTesting_accuracy : {val_accuracy}")
-            print(f"Model checkpoints saved to {params['WORKING_DIR']}checkpoints/model_{params['MODEL_STR']}_learning_rate_{params['LEARNING_RATE']}_batch_size_{params['BATCH_SIZE']}.pt")
-            save_confusion(y_true,y_pred, params['MODEL_STR'])
-            break
-        ep += 1
-        epoch_train_loss.append(training_loss)
-        epoch_val_loss.append(validation_loss)
-        epoch_train_acc.append(train_accuracy)
-        epoch_val_acc.append(val_accuracy)
-
-
-        wandb.log({"epoch": epoch, "training_loss": training_loss, "val_loss": validation_loss,"training_acc":train_accuracy,"val_acc":val_accuracy})
-    df = pd.DataFrame()
-    df['epochs'] = list(range(ep))
-    df['train_loss'] = epoch_train_loss
-    df['val_loss'] = epoch_val_loss
-    df['train_acc'] = epoch_train_acc
-    df['val_acc'] = epoch_val_acc
-    return df,y_pred,y_true
