@@ -342,12 +342,189 @@
 #     args = parser.parse_args()
 #     create_data(args)
         
+# import os
+# import torch
+# import torchvision.transforms as transforms
+# from PIL import Image
+# from sklearn.model_selection import train_test_split
+# import config
+# import argparse
+# from tqdm import tqdm
+
+# # Define data augmentation transforms
+# data_transform = transforms.Compose([
+#     transforms.RandomHorizontalFlip(),
+#     transforms.RandomRotation(30),
+#     transforms.RandomResizedCrop(224),
+#     transforms.ToTensor(),
+#     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+# ])
+
+# def create_data(args_params):
+#     # Determine the dataset and associated strings
+#     if args_params.dataset == 'fundus':
+#         normal_data_str = "normal"
+#         disease_data_str = 'csr'
+#     elif args_params.dataset == 'macular':
+#         normal_data_str = "OCTID_NORMAL"
+#         disease_data_str = "OCTID_MH"
+
+#     # Load normal images
+#     normal_images = []
+#     normal_labels = []
+#     normal_images_files = os.listdir(f"images/{normal_data_str}")
+#     for file_name in tqdm(normal_images_files, total=len(normal_images_files), postfix="Normal"):
+#         image = Image.open(os.path.join(f"images/{normal_data_str}", file_name))
+#         normal_images.append(data_transform(image))
+#         normal_labels.append(0)
+
+#     # Load diseased images
+#     diseased_images = []
+#     diseased_labels = []
+#     diseased_images_files = os.listdir(f"images/{disease_data_str}")
+#     for file_name in tqdm(diseased_images_files, total=len(diseased_images_files), postfix="Disease"):
+#         image = Image.open(os.path.join(f"images/{disease_data_str}", file_name))
+#         diseased_images.append(data_transform(image))
+#         diseased_labels.append(1)
+#     print("stacking")
+#     # Concatenate images and labels
+#     images = torch.stack(normal_images + diseased_images)
+#     labels = torch.tensor(normal_labels + diseased_labels)
+#     print("splitting")
+
+#     # Split the data into training and validation sets
+#     train_images, val_images, train_labels, val_labels = train_test_split(
+#         images, labels, test_size=config.VAL_SPLIT_SIZE, random_state=42)
+#     print("saving")
+
+#     # Create dictionary with data
+#     data_dict = {
+#         "train": {
+#             "train_images": train_images,
+#             "train_labels": train_labels
+#         },
+#         "validation": {
+#             "val_images": val_images,
+#             "val_labels": val_labels},
+#         # },
+#         # "test": {
+#         #     "test_images": val_images[:config.TEST_SPLIT_SIZE],
+#         #     "test_labels": val_labels[:config.TEST_SPLIT_SIZE]
+#         # },
+#         "metadata": {
+#             "train_size": len(train_labels),
+#             "test_size": len(val_labels)
+#         }
+#     }
+
+#     # Save data dictionary to file
+#     torch.save(data_dict, f"dataset/{args_params.dataset}_train_val_test.pt")
+#     print("Data prepared.")
+
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument(
+#         "--dataset",
+#         choices=["fundus", "macular"],
+#         required=True,
+#         help="Choose dataset."
+#     )
+#     args = parser.parse_args()
+#     create_data(args)
+
+
+# import os
+# import torch
+# import torchvision.transforms as transforms
+# from PIL import Image
+# from sklearn.model_selection import train_test_split
+# import config
+# import argparse
+# from tqdm import tqdm
+
+# # Define data augmentation transforms
+# data_transform = transforms.Compose([
+#     transforms.RandomHorizontalFlip(),
+#     transforms.RandomRotation(30),
+#     transforms.RandomResizedCrop(224),
+#     transforms.ToTensor(),
+#     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+# ])
+
+# def create_data(args_params):
+#     # Determine the dataset and associated strings
+#     if args_params.dataset == 'fundus':
+#         normal_data_str = "normal"
+#         disease_data_str = 'csr'
+#     elif args_params.dataset == 'macular':
+#         normal_data_str = "OCTID_NORMAL"
+#         disease_data_str = "OCTID_MH"
+
+#     # Load normal images
+#     normal_images = []
+#     normal_labels = []
+#     normal_images_files = os.listdir(f"images/{normal_data_str}")
+#     for file_name in tqdm(normal_images_files, total=len(normal_images_files), postfix="Normal"):
+#         image = Image.open(os.path.join(f"images/{normal_data_str}", file_name))
+#         normal_images.append(data_transform(image))
+#         normal_labels.append(0)
+
+#     # Load diseased images
+#     diseased_images = []
+#     diseased_labels = []
+#     diseased_images_files = os.listdir(f"images/{disease_data_str}")
+#     for file_name in tqdm(diseased_images_files, total=len(diseased_images_files), postfix="Disease"):
+#         image = Image.open(os.path.join(f"images/{disease_data_str}", file_name))
+#         diseased_images.append(data_transform(image))
+#         diseased_labels.append(1)
+#     print("Stacking and splitting the data.")
+
+#     # Concatenate images and labels
+#     images = torch.stack(normal_images + diseased_images)
+#     labels = torch.tensor(normal_labels + diseased_labels)
+
+#     # Split the data into training and validation sets
+#     train_images, val_images, train_labels, val_labels = train_test_split(
+#         images, labels, test_size=config.VAL_SPLIT_SIZE, random_state=42)
+
+#     # Create dictionary with data
+#     data_dict = {
+#         "train": {
+#             "train_images": train_images,
+#             "train_labels": train_labels
+#         },
+#         "validation": {
+#             "val_images": val_images,
+#             "val_labels": val_labels},
+#         "metadata": {
+#             "train_size": len(train_labels),
+#             "test_size": len(val_labels)
+#         }
+#     }
+
+#     # Save data dictionary to file
+#     file_path = f"dataset/{args_params.dataset}_train_val_test.pt"
+#     with open(file_path, "wb") as f:
+#         torch.save(data_dict, f)
+#     print(f"Data prepared and saved to {file_path}.")
+
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument(
+#         "--dataset",
+#         choices=["fundus", "macular"],
+#         required=True,
+#         help="Choose dataset."
+#     )
+#     args = parser.parse_args()
+#     create_data(args)
+
+
 import os
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
 from sklearn.model_selection import train_test_split
-import config
 import argparse
 from tqdm import tqdm
 
@@ -360,6 +537,17 @@ data_transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
+def append_images(data_str):
+    normal_images = []
+    normal_labels = []
+    images_files = os.listdir(f"images/{data_str}")
+    for file_name in tqdm(images_files, total=len(images_files), postfix="Normal"):
+        image = Image.open(os.path.join(f"images/{data_str}", file_name))
+        normal_images.append(data_transform(image))
+        normal_labels.append(0)
+    return normal_images,normal_labels
+
+
 def create_data(args_params):
     # Determine the dataset and associated strings
     if args_params.dataset == 'fundus':
@@ -368,34 +556,15 @@ def create_data(args_params):
     elif args_params.dataset == 'macular':
         normal_data_str = "OCTID_NORMAL"
         disease_data_str = "OCTID_MH"
-
-    # Load normal images
-    normal_images = []
-    normal_labels = []
-    normal_images_files = os.listdir(f"images/{normal_data_str}")
-    for file_name in tqdm(normal_images_files, total=len(normal_images_files), postfix="Normal"):
-        image = Image.open(os.path.join(f"images/{normal_data_str}", file_name))
-        normal_images.append(data_transform(image))
-        normal_labels.append(0)
-
-    # Load diseased images
-    diseased_images = []
-    diseased_labels = []
-    diseased_images_files = os.listdir(f"images/{disease_data_str}")
-    for file_name in tqdm(diseased_images_files, total=len(diseased_images_files), postfix="Disease"):
-        image = Image.open(os.path.join(f"images/{disease_data_str}", file_name))
-        diseased_images.append(data_transform(image))
-        diseased_labels.append(1)
-    print("stacking")
+    normal_images,normal_labels = append_images(normal_data_str)
+    diseased_images,diseased_labels = append_images(disease_data_str)
     # Concatenate images and labels
     images = torch.stack(normal_images + diseased_images)
     labels = torch.tensor(normal_labels + diseased_labels)
-    print("splitting")
-
+    
     # Split the data into training and validation sets
     train_images, val_images, train_labels, val_labels = train_test_split(
-        images, labels, test_size=config.VAL_SPLIT_SIZE, random_state=42)
-    print("saving")
+        images, labels, test_size=args_params.val_split_size, random_state=42)
 
     # Create dictionary with data
     data_dict = {
@@ -405,12 +574,7 @@ def create_data(args_params):
         },
         "validation": {
             "val_images": val_images,
-            "val_labels": val_labels
-        },
-        "test": {
-            "test_images": val_images[:config.TEST_SPLIT_SIZE],
-            "test_labels": val_labels[:config.TEST_SPLIT_SIZE]
-        },
+            "val_labels": val_labels},
         "metadata": {
             "train_size": len(train_labels),
             "test_size": len(val_labels)
@@ -418,8 +582,9 @@ def create_data(args_params):
     }
 
     # Save data dictionary to file
-    torch.save(data_dict, f"dataset/{args_params.dataset}_train_val_test.pt")
-    print("Data prepared.")
+    file_path = f"dataset/{args_params.dataset}_train_val_test.pt"
+    torch.save(data_dict, file_path)
+    print(f"Data prepared and saved to {file_path}.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -428,6 +593,12 @@ if __name__ == "__main__":
         choices=["fundus", "macular"],
         required=True,
         help="Choose dataset."
+    )
+    parser.add_argument(
+        "--val_split_size",
+        type=float,
+        default=0.2,
+        help="Validation split size."
     )
     args = parser.parse_args()
     create_data(args)
